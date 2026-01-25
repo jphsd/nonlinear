@@ -16,14 +16,14 @@ var (
 		nl   nonlinear.NonLinear
 		name string
 	}{
-		{&nonlinear.NLLinear{}, "Linear"},
-		{&nonlinear.NLSquare{}, "Square"},
-		{&nonlinear.NLCube{}, "Cube"},
-		{&nonlinear.NLCircle1{}, "Circle1"},
-		{&nonlinear.NLCircle2{}, "Circle2"},
-		{&nonlinear.NLSin{}, "Sin"},
-		{&nonlinear.NLSin1{}, "Sin1"},
-		{&nonlinear.NLSin2{}, "Sin2"},
+		{nonlinear.NLLinear{}, "Linear"},
+		{nonlinear.NLSquare{}, "Square"},
+		{nonlinear.NLCube{}, "Cube"},
+		{nonlinear.NLCircle1{}, "Circle1"},
+		{nonlinear.NLCircle2{}, "Circle2"},
+		{nonlinear.NLSin{}, "Sin"},
+		{nonlinear.NLSin1{}, "Sin1"},
+		{nonlinear.NLSin2{}, "Sin2"},
 		{nonlinear.NewNLLame(2, 2), "Lame 1"},
 		{nonlinear.NewNLLame(4, 4), "Lame 2"},
 		{nonlinear.NewNLLame(8, 8), "Lame 3"},
@@ -50,8 +50,8 @@ var (
 		{nonlinear.NewNLLogistic(1, 0.8), "Logistic 7"},
 		{nonlinear.NewNLLogistic(12, 0.8), "Logistic 8"},
 		{nonlinear.NewNLLogistic(100, 0.8), "Logistic 9"},
-		{&nonlinear.NLP3{}, "P3"},
-		{&nonlinear.NLP5{}, "P5"},
+		{nonlinear.NLP3{}, "P3"},
+		{nonlinear.NLP5{}, "P5"},
 		{nonlinear.NewNLStopped([][]float64{
 			{0.24, 0.1},
 			{0.25, 0.3},
@@ -74,7 +74,7 @@ func graph(nl nonlinear.NonLinear, n int, s string) {
 	// Create image to write into
 	width, height := 1000, 1000
 	img := image.NewRGBA(width, height, color.White)
-	g2d.FillPath(img, g2d.Square([]float64{500, 500}, 800), g2d.LightGrayPen)
+	g2d.FillPath(img, g2d.RegularPolygon(4, []float64{500, 500}, 800, 0), g2d.LightGrayPen)
 
 	// Plot graph in 800x800 box
 
@@ -86,12 +86,12 @@ func graph(nl nonlinear.NonLinear, n int, s string) {
 	t := dt
 	for i := 0; i < 100; i++ {
 		v := nl.Transform(t)
-		path.AddSteps([][]float64{{t, v}})
+		path.AddStep([]float64{t, v})
 		//fmt.Printf("%f => %f\n", t, v)
 		t += dt
 	}
 
-	g2d.DrawPath(img, path.Transform(xfm), g2d.BlackPen)
+	g2d.DrawPath(img, path.Process(xfm)[0], g2d.BlackPen)
 
 	// Capture image output
 	image.SaveImage(img, fmt.Sprintf("nlerp-%d %s", n, s))
